@@ -523,7 +523,7 @@ namespace PdfSharp.Xps.Rendering
           xgState.SetDefault1();
 
           double opacity = Opacity * iBrush.Opacity;
-          if (opacity < 1)
+          if (opacity <= 1)
           {
             xgState.StrokeAlpha = opacity;
             xgState.NonStrokeAlpha = opacity;
@@ -893,6 +893,14 @@ namespace PdfSharp.Xps.Rendering
     internal void WriteGeometry(PathGeometry geo)
     {
       BeginGraphic();
+
+      // PathGeometry itself may have its own transform
+      if (geo.Transform != null) // also check render mode?
+      {
+          MultiplyTransform(geo.Transform);
+          WriteRenderTransform(geo.Transform);
+      }
+
       foreach (PathFigure figure in geo.Figures)
       {
         PolyLineSegment pseg;

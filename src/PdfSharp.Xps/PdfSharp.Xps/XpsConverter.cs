@@ -187,6 +187,36 @@ namespace PdfSharp.Xps
     /// <summary>
     /// Implements the PDF file to XPS file conversion.
     /// </summary>
+    public static void Convert(XpsDocument xpsDocument, string pdfFilename, int docIndex)
+    {
+
+        if (xpsDocument == null)
+            throw new ArgumentNullException("xpsDocument");
+
+        if (String.IsNullOrEmpty(pdfFilename))
+            throw new ArgumentNullException("pdfFilename");
+
+        FixedDocument fixedDocument = xpsDocument.GetDocument();
+        PdfDocument pdfDocument = new PdfDocument();
+        PdfRenderer renderer = new PdfRenderer();
+
+        int pageIndex = 0;
+        foreach (FixedPage page in fixedDocument.Pages)
+        {
+            if (page == null)
+                continue;
+            Debug.WriteLine(String.Format("  doc={0}, page={1}", docIndex, pageIndex));
+            PdfPage pdfPage = renderer.CreatePage(pdfDocument, page);
+            renderer.RenderPage(pdfPage, page);
+            pageIndex++;
+        }
+        pdfDocument.Save(pdfFilename);
+
+    }
+
+    /// <summary>
+    /// Implements the PDF file to XPS file conversion.
+    /// </summary>
     public static void Convert(string xpsFilename, string pdfFilename, int docIndex, bool createComparisonDocument)
     {
       if (String.IsNullOrEmpty(xpsFilename))
@@ -217,12 +247,6 @@ namespace PdfSharp.Xps
           PdfPage pdfPage = renderer.CreatePage(pdfDocument, page);
           renderer.RenderPage(pdfPage, page);
           pageIndex++;
-
-#if DEBUG
-          // stop at page...
-          if (pageIndex == 50)
-            break;
-#endif
         }
         pdfDocument.Save(pdfFilename);
         xpsDocument.Close();
@@ -266,12 +290,6 @@ namespace PdfSharp.Xps
 
             //renderer.RenderPage(pdfPage, page);
             pageIndex++;
-
-#if DEBUG
-            // stop at page...
-            if (pageIndex == 50)
-              break;
-#endif
           }
 
           string pdfComparisonFilename = pdfFilename;

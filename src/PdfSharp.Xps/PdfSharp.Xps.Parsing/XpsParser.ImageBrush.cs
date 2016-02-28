@@ -19,6 +19,7 @@ namespace PdfSharp.Xps.Parsing
       Debug.Assert(this.reader.Name == "ImageBrush");
       bool isEmptyElement = this.reader.IsEmptyElement;
       ImageBrush brush = new ImageBrush();
+      brush.Opacity = 1;
       while (MoveToNextAttribute())
       {
         switch (this.reader.Name)
