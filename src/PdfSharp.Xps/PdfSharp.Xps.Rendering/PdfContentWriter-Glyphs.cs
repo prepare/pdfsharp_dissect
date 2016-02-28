@@ -104,7 +104,7 @@ namespace PdfSharp.Xps.Rendering
       Debug.Assert(realizedFont != null);
       realizedFont.AddChars(glyphs.UnicodeString);
 
-      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor.descriptor;
+      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor._descriptor;
 
       //if (bold && !descriptor.IsBoldFace)
       //{
@@ -126,9 +126,9 @@ namespace PdfSharp.Xps.Rendering
         {
           char ch = s[idx];
           int glyphID = 0;
-          if (descriptor.fontData.cmap.symbol)
+          if (descriptor.FontFace.cmap.symbol)
           {
-            glyphID = (int)ch + (descriptor.fontData.os2.usFirstCharIndex & 0xFF00);
+            glyphID = (int)ch + (descriptor.FontFace.os2.usFirstCharIndex & 0xFF00);
             glyphID = descriptor.CharCodeToGlyphIndex((char)glyphID);
           }
           else
@@ -242,7 +242,7 @@ namespace PdfSharp.Xps.Rendering
       bool stop = false;
 
       PdfFont realizedFont = this.graphicsState.realizedFont;
-      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor.descriptor;
+      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor._descriptor;
       int glyphIndex;
 
       double x = glyphs.OriginX;
@@ -274,7 +274,7 @@ namespace PdfSharp.Xps.Rendering
           {
             outputText.Append('>');
 
-            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.x, pos.y, outputText.ToString());
+            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.X, pos.Y, outputText.ToString());
 
             //double width = descriptor.GlyphIndexToPdfWidth(glyphIndex);
             //if (!PdfSharp.Internal.DoubleUtil.IsNaN(mapping.AdvanceWidth))
@@ -315,7 +315,7 @@ namespace PdfSharp.Xps.Rendering
           {
             outputText.Append('>');
 
-            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.x, pos.y, outputText.ToString());
+            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.X, pos.Y, outputText.ToString());
 
             double width = descriptor.GlyphIndexToPdfWidth(glyphIndex);
             if (!PdfSharp.Internal.DoubleUtil.IsNaN(mapping.AdvanceWidth))
@@ -379,7 +379,7 @@ namespace PdfSharp.Xps.Rendering
       bool stop = false;
 
       PdfFont realizedFont = this.graphicsState.realizedFont;
-      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor.descriptor;
+      OpenTypeDescriptor descriptor = realizedFont.FontDescriptor._descriptor;
       int glyphIndex;
 
       double x = glyphs.OriginX;
@@ -413,7 +413,7 @@ namespace PdfSharp.Xps.Rendering
           {
             outputText.Append('>');
 
-            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.x, pos.y, outputText.ToString());
+            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.X, pos.Y, outputText.ToString());
 
             //double width = descriptor.GlyphIndexToPdfWidth(glyphIndex);
             //if (!PdfSharp.Internal.DoubleUtil.IsNaN(mapping.AdvanceWidth))
@@ -434,7 +434,7 @@ namespace PdfSharp.Xps.Rendering
           // Adjust former uOffset
           if (uOffset != 0)
           {
-            pos.x -= uOffset;
+            pos.X -= uOffset;
             uOffset = 0;
             mustRender = true;
           }
@@ -443,7 +443,7 @@ namespace PdfSharp.Xps.Rendering
           if (mapping.HasUOffset)
           {
             uOffset = mapping.UOffset * glyphs.FontRenderingEmSize / 100;
-            pos.x += uOffset;
+            pos.X += uOffset;
             mustRender = true;
             hasOffset = true;
           }
@@ -451,7 +451,7 @@ namespace PdfSharp.Xps.Rendering
           // Adjust former vOffset
           if (vOffset != 0)
           {
-            pos.y += vOffset;
+            pos.Y += vOffset;
             vOffset = 0;
             mustRender = true;
           }
@@ -460,7 +460,7 @@ namespace PdfSharp.Xps.Rendering
           if (mapping.HasVOffset)
           {
             vOffset = mapping.VOffset * glyphs.FontRenderingEmSize / 100;
-            pos.y -= vOffset;
+            pos.Y -= vOffset;
             mustRender = true;
             hasOffset = true;
           }
@@ -495,7 +495,7 @@ namespace PdfSharp.Xps.Rendering
           {
             outputText.Append('>');
 
-            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.x, pos.y, outputText.ToString());
+            WriteLiteral("{0:0.####} {1:0.####} Td {2}Tj\n", pos.X, pos.Y, outputText.ToString());
 
             double width = descriptor.GlyphIndexToPdfWidth(glyphIndex);
             if (!PdfSharp.Internal.DoubleUtil.IsNaN(mapping.AdvanceWidth))

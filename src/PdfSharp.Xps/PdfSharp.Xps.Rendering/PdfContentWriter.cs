@@ -86,7 +86,7 @@ namespace PdfSharp.Xps.Rendering
     internal void CreateDefaultTransparencyGroup() // HACK
     {
       if (this.page != null)
-        this.page.transparencyUsed = true;
+        this.page.TransparencyUsed = true;
     }
 
     /// <summary>
@@ -756,14 +756,14 @@ namespace PdfSharp.Xps.Rendering
         content.CreateStream(PdfEncoders.RawEncoding.GetBytes(GetContent()));
 
         //this.gfx = null;
-        this.page.RenderContent.pdfRenderer = null;
+        this.page.RenderContent._pdfRenderer = null;
         this.page.RenderContent = null;
         this.page = null;
       }
       else if (this.form != null)
       {
-        this.form.pdfForm.CreateStream(PdfEncoders.RawEncoding.GetBytes(GetContent()));
-        this.form.pdfRenderer = null;
+        this.form.PdfForm.CreateStream(PdfEncoders.RawEncoding.GetBytes(GetContent()));
+        this.form.PdfRenderer = null;
         this.form = null;
       }
       else if (this.contentDictionary != null)
@@ -1142,7 +1142,7 @@ namespace PdfSharp.Xps.Rendering
     {
       BeginGraphic();
       WriteLiteral("{0:0.####} {1:0.####} {2:0.####} {3:0.####} re W n",
-        rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
+        rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
     }
 
     /// <summary>
@@ -1279,7 +1279,7 @@ namespace PdfSharp.Xps.Rendering
     void AdjustTextMatrix(ref XPoint pos)
     {
       XPoint posSave = pos;
-      pos = pos - new XVector(this.graphicsState.realizedTextPosition.x, this.graphicsState.realizedTextPosition.y);
+      pos = pos - new XVector(this.graphicsState.realizedTextPosition.X, this.graphicsState.realizedTextPosition.Y);
       this.graphicsState.realizedTextPosition = posSave;
     }
 

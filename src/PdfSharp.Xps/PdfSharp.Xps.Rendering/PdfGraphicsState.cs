@@ -139,7 +139,7 @@ namespace PdfSharp.Xps.Rendering
                 double opacity = path.Opacity * color.ScA;
                 if (opacity < 1)
                 {
-                    PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateStroke(color.ScA);
+                    PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateStroke(color.ScA, true);
                     string gs = this.writer.Resources.AddExtGState(extGState);
                     this.writer.WriteLiteral("{0} gs\n", gs);
 
@@ -413,7 +413,7 @@ namespace PdfSharp.Xps.Rendering
         /// </summary>
         public void RealizeStrokeOpacity(double opacity)
         {
-            PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateStroke(opacity);
+            PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateStroke(opacity, true);
             string gsName = this.writer.Resources.AddExtGState(extGState);
             this.writer.WriteLiteral(gsName + " gs\n");
         }
@@ -450,7 +450,7 @@ namespace PdfSharp.Xps.Rendering
                 //if (this.renderer.Owner.Version >= 14 && this.realizedStrokeColor.A != color.A)
                 //if (this.realizedFillColor.ScA != color.ScA)
                 {
-                    PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(color.ScA);
+                    PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(color.ScA, true);
                     string gs = this.writer.Resources.AddExtGState(extGState);
                     this.writer.WriteLiteral("{0} gs\n", gs);
 
@@ -521,7 +521,7 @@ namespace PdfSharp.Xps.Rendering
         /// </summary>
         public void RealizeFillOpacity(double opacity)
         {
-            PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(opacity);
+            PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(opacity, true);
             string gsName = this.writer.Resources.AddExtGState(extGState);
             this.writer.WriteLiteral(gsName + " gs\n");
         }
@@ -552,7 +552,7 @@ namespace PdfSharp.Xps.Rendering
 
             //if (this.realizedFillColor.ScA != color.ScA)
             {
-                PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(color.ScA);
+                PdfExtGState extGState = this.writer.Owner.ExtGStateTable.GetExtGStateNonStroke(color.ScA, true);
                 string gs = this.writer.Resources.AddExtGState(extGState);
                 this.writer.WriteLiteral("{0} gs\n", gs);
 

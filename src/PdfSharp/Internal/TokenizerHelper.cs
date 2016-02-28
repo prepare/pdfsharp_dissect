@@ -40,6 +40,14 @@ namespace Edf.Internal
     // Use netmassdownloader -d "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\v3.0" -output g:\cachetest -v
     class TokenizerHelper
     {
+        internal char PeekNextCharacter()
+        {
+            if (_charIndex >= _strLen)
+                return 'X';
+            char ch = _str[_charIndex];
+            return ch;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenizerHelper"/> class.
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using PdfSharp.Drawing;
 using PdfSharp.Internal;
@@ -46,7 +47,7 @@ namespace PdfSharp.Xps.XpsModel
     public static Size Parse(string value)
     {
       Size size = new Size();
-      TokenizerHelper tokenizer = new TokenizerHelper(value);
+      TokenizerHelper tokenizer = new TokenizerHelper(value, CultureInfo.InvariantCulture);
       size.Width = ParserHelper.ParseDouble(tokenizer.NextTokenRequired());
       size.Height = ParserHelper.ParseDouble(tokenizer.NextTokenRequired());
       return size;

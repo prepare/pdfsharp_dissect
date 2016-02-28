@@ -93,7 +93,7 @@ namespace PdfSharp.Xps.Parsing
       geo = new PathGeometry();
       Point point = new Point();
       PathFigure figure = null;
-      TokenizerHelper helper = new TokenizerHelper(data);
+      TokenizerHelper helper = new TokenizerHelper(data, CultureInfo.InvariantCulture);
       helper.NextTokenRequired();
       do
       {

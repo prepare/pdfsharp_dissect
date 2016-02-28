@@ -133,7 +133,7 @@ namespace PdfSharp.Xps.Rendering
       if (brush.SpreadMethod != SpreadMethod.Pad)
       {
         // TODO: Calculate number of required shadings
-        shadingCount = Convert.ToInt32(Math.Max(boundingBox.width / (2 * brush.RadiusX), boundingBox.height / (2 * brush.RadiusY)) + 1);
+        shadingCount = Convert.ToInt32(Math.Max(boundingBox.Width / (2 * brush.RadiusX), boundingBox.Height / (2 * brush.RadiusY)) + 1);
 
         // HACK: Rule of thumb, better than nothing
         shadingCount *= 2;

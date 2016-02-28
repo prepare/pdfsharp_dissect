@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using PdfSharp.Drawing;
 using PdfSharp.Internal;
@@ -78,7 +79,7 @@ namespace PdfSharp.Xps.XpsModel
     public static Point Parse(string value)
     {
       Point point = new Point();
-      TokenizerHelper tokenizer = new TokenizerHelper(value);
+      TokenizerHelper tokenizer = new TokenizerHelper(value, CultureInfo.InvariantCulture);
       point.X = ParserHelper.ParseDouble(tokenizer.NextTokenRequired());
       point.Y = ParserHelper.ParseDouble(tokenizer.NextTokenRequired());
       return point;
@@ -90,7 +91,7 @@ namespace PdfSharp.Xps.XpsModel
     internal static PointStopCollection ParsePoints(string value)
     {
       PointStopCollection points = new PointStopCollection();
-      TokenizerHelper tokenizer = new TokenizerHelper(value);
+      TokenizerHelper tokenizer = new TokenizerHelper(value, CultureInfo.InvariantCulture);
       while (tokenizer.NextToken())
       {
         Point point = new Point(ParserHelper.ParseDouble(tokenizer.GetCurrentToken()), ParserHelper.ParseDouble(tokenizer.NextTokenRequired()));

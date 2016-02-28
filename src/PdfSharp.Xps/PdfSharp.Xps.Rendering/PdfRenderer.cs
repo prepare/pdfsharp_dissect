@@ -71,7 +71,7 @@ namespace PdfSharp.Xps.Rendering
 
     internal PdfDocument Document
     {
-      get { return this.page.document; }
+      get { return this.page._document; }
     }
 
     PdfPage page;

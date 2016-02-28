@@ -89,9 +89,9 @@ namespace PdfSharp.Pdf.Advanced
         /// </summary>
         public PdfFont GetFont(string idName, byte[] fontData)
         {
-            Debug.Assert(false);
+            //Debug.Assert(false);
             //FontSelector selector = new FontSelector(idName);
-            string selector = null; // ComputeKey(font); //new FontSelector(font);
+            string selector = idName; // ComputeKey(font); //new FontSelector(font);
             PdfFont pdfFont;
             if (!_fonts.TryGetValue(selector, out pdfFont))
             {
