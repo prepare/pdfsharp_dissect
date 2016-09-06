@@ -691,6 +691,17 @@ namespace PdfSharp.Pdf.AcroForms
             { }
 
             /// <summary>
+            /// Gets the number of elements in the array.
+            /// </summary>
+            public int Count
+            {
+                get
+                {
+                    return Elements.Count;
+                }
+            }
+
+            /// <summary>
             /// Gets the names of all fields in the collection.
             /// </summary>
             public string[] Names
