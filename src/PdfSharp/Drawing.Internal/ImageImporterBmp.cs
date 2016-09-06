@@ -56,7 +56,7 @@ namespace PdfSharp.Drawing.Internal
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
+            catch
             {
             }
             return null;
