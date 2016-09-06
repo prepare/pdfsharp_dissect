@@ -27,6 +27,7 @@
 // DEALINGS IN THE SOFTWARE.
 #endregion
 
+using PdfSharp.Drawing;
 using System;
 
 namespace PdfSharp.Pdf.AcroForms
@@ -55,14 +56,18 @@ namespace PdfSharp.Pdf.AcroForms
             get
             {
                 string value = Elements.GetString(Keys.V);
-                return IndexInOptArray(value);
+                // try export value first
+                var index = IndexInOptArray(value, true);
+                if (index < 0)
+                    index = IndexInOptArray(value, false);
+                return index;
             }
             set
             {
                 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx		  
                 if (value != -1) //R080325
                 {
-                    string key = ValueInOptArray(value);
+                    string key = ValueInOptArray(value, true);
                     Elements.SetString(Keys.V, key);
                     Elements.SetInteger("/I", value); //R080304 !!!!!!! sonst reagiert die Combobox überhaupt nicht !!!!!
                 }
@@ -98,6 +103,33 @@ namespace PdfSharp.Pdf.AcroForms
                 }
                 else
                     throw new NotImplementedException("Values other than string cannot be set.");
+            }
+        }
+
+        internal override void Flatten()
+        {
+            base.Flatten();
+
+            var index = SelectedIndex;
+            if (index >= 0)
+            {
+                var text = ValueInOptArray(index, false);
+                if (text.Length > 0)
+                {
+                    var rect = Rectangle;
+                    if (!rect.IsEmpty)
+                    {
+                        var xRect = new XRect(rect.X1, Page.Height.Point - rect.Y2, rect.Width, rect.Height);
+                        using (var gfx = XGraphics.FromPdfPage(Page))
+                        {
+                            gfx.Save();
+                            gfx.IntersectClip(xRect);
+                            // Note: Page origin [0,0] is bottom left !
+                            gfx.DrawString(text, Font, new XSolidBrush(ForeColor), xRect + new XPoint(2, 2), XStringFormats.TopLeft);
+                            gfx.Restore();
+                        }
+                    }
+                }
             }
         }
 

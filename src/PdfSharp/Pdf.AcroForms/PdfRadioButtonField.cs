@@ -27,7 +27,10 @@
 // DEALINGS IN THE SOFTWARE.
 #endregion
 
+using PdfSharp.Pdf.Advanced;
+using PdfSharp.Pdf.Annotations;
 using System;
+using System.Collections.Generic;
 
 namespace PdfSharp.Pdf.AcroForms
 {
@@ -48,6 +51,49 @@ namespace PdfSharp.Pdf.AcroForms
         internal PdfRadioButtonField(PdfDictionary dict)
             : base(dict)
         { }
+
+        /// <summary>
+        /// Gets the name of the Field-Appearances for the RadioButtons in the "checked" state. (unchecked value should be "/Off")
+        /// Use this as the value to set the value for the whole RadioButton group.
+        /// </summary>
+        public IList<string> FieldValues
+        {
+            get
+            {
+                var values = new List<string>();
+                if (HasKids)
+                {
+                    foreach (PdfItem childItem in Fields)
+                    {
+                        PdfDictionary child;
+                        if (childItem is PdfReference)
+                            child = ((PdfReference)childItem).Value as PdfDictionary;
+                        else
+                            child = childItem as PdfDictionary;
+                        if (child == null)
+                            continue;
+
+                        var ap = child.Elements.GetDictionary(PdfAnnotation.Keys.AP);
+                        if (ap != null)
+                        {
+                            var n = ap.Elements.GetDictionary("/N");
+                            if (n != null)
+                            {
+                                foreach (var key in n.Elements.Keys)
+                                {
+                                    if (key != "/Off")
+                                    {
+                                        values.Add(key);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return values;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the index of the selected radio button in a radio button group.
