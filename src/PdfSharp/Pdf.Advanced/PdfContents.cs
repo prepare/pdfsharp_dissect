@@ -128,7 +128,7 @@ namespace PdfSharp.Pdf.Advanced
         public PdfContent ReplaceContent(CSequence cseq)
         {
             if (cseq == null)
-                throw new ArgumentException("cseq");
+                throw new ArgumentNullException("cseq");
 
             return ReplaceContent(cseq.ToContent());
         }

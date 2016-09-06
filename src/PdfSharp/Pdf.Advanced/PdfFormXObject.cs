@@ -80,7 +80,6 @@ namespace PdfSharp.Pdf.Advanced
         internal PdfFormXObject(PdfDocument thisDocument, PdfImportedObjectTable importedObjectTable, XPdfForm form)
             : base(thisDocument)
         {
-            Debug.Assert(ReferenceEquals(thisDocument, importedObjectTable.Owner));
             Elements.SetName(Keys.Type, "/XObject");
             Elements.SetName(Keys.Subtype, "/Form");
 
@@ -91,6 +90,7 @@ namespace PdfSharp.Pdf.Advanced
                 return;
             }
             Debug.Assert(importedObjectTable != null);
+            Debug.Assert(ReferenceEquals(thisDocument, importedObjectTable.Owner));
 
             XPdfForm pdfForm = form;
             // Get import page
