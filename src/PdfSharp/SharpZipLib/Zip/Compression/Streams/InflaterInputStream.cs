@@ -751,7 +751,14 @@ namespace PdfSharp.SharpZipLib.Zip.Compression.Streams
 
                 if (inf.IsNeedingInput)
                 {
-                    Fill();
+                    try
+                    {
+                        Fill();
+                    }
+                    catch (SharpZipBaseException)
+                    { // WB! early EOF: apparantly not a big deal for some PDF pages: break out of the loop.
+                        break;
+                    }
                 }
                 else if (bytesRead == 0)
                 {
