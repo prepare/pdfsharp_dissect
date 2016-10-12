@@ -167,7 +167,7 @@ namespace PdfSharp.Pdf.IO
                     {
                         char major = header[ich + 4];
                         char minor = header[ich + 6];
-                        if (major >= '1' && major < '2' && minor >= '0' && minor <= '9')
+                        if (major >= '1' && major <= '2' && minor >= '0' && minor <= '9')
                             return (major - '0') * 10 + (minor - '0');
                     }
                 }
