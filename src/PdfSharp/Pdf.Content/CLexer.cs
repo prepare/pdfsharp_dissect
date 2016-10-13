@@ -214,14 +214,30 @@ namespace PdfSharp.Pdf.Content
             _token.Append(_currChar);
 #if true
             char ch;
+
+            bool foundHexString = false;
+
             while (true)
             {
                 _token.Append(ch = ScanNextChar());
+
+                if (ch == '<' && _token.Length > 2)
+                {
+                    foundHexString = true;
+                }
+
                 if (ch == '>')
                 {
-                    _token.Append(ch = ScanNextChar());
-                    ScanNextChar();
-                    return CSymbol.Dictionary;
+                    if (foundHexString)
+                    {
+                        foundHexString = false;
+                    }
+                    else
+                    {
+                        _token.Append(ch = ScanNextChar());
+                        ScanNextChar();
+                        return CSymbol.Dictionary;
+                    }
                 }
             }
 #else
