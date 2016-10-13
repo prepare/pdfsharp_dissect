@@ -279,7 +279,7 @@ namespace PdfSharp.Pdf.Content
                 if (char.IsDigit(ch))
                 {
                     _token.Append(ch);
-                    if (decimalDigits < 10)
+                    if (decimalDigits < 15)
                     {
                         value = 10 * value + ch - '0';
                         if (period)
@@ -326,7 +326,7 @@ namespace PdfSharp.Pdf.Content
             ContentReaderDiagnostics.ThrowNumberOutOfIntegerRange(value);
             return CSymbol.Error;
         }
-        static readonly double[] PowersOf10 = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
+        static readonly double[] PowersOf10 = { 1e00, 1e01, 1e02, 1e03, 1e04, 1e05, 1e06, 1e7, 1e08, 1e09, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15 };
 
         /// <summary>
         /// Scans an operator.
@@ -715,8 +715,20 @@ namespace PdfSharp.Pdf.Content
         {
             get
             {
+                var tokenString = _token.ToString();
+                var values = tokenString.Split('.');
+                int digits = values.Length == 2 ? values[1].Length : 0;
+
+                if (digits > 15)
+                {
+                    digits = 15;
+                }
+
+                var value = double.Parse(tokenString, CultureInfo.InvariantCulture);
+#pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                Debug.Assert(_tokenAsReal == double.Parse(_token.ToString(), CultureInfo.InvariantCulture));
+                Debug.Assert(this._tokenAsReal == Math.Round(value, digits));
+#pragma warning restore RECS0018 // Comparison of floating point numbers with equality operator
                 return _tokenAsReal;
             }
         }
