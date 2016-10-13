@@ -61,8 +61,13 @@ namespace PdfSharp.Pdf.Security
         /// PdfDocumentSecurityLevel to PdfDocumentSecurityLevel.Encrypted128Bit if its current
         /// value is PdfDocumentSecurityLevel.None.
         /// </summary>
-        public string UserPassword
+        public override string UserPassword
         {
+            internal get
+            {
+                return _userPassword;
+            }
+
             set
             {
                 if (_document._securitySettings.DocumentSecurityLevel == PdfDocumentSecurityLevel.None)
@@ -70,15 +75,20 @@ namespace PdfSharp.Pdf.Security
                 _userPassword = value;
             }
         }
-        internal string _userPassword;
+        private string _userPassword;
 
         /// <summary>
         /// Sets the owner password of the document. Setting a password automatically sets the
         /// PdfDocumentSecurityLevel to PdfDocumentSecurityLevel.Encrypted128Bit if its current
         /// value is PdfDocumentSecurityLevel.None.
         /// </summary>
-        public string OwnerPassword
+        public override string OwnerPassword
         {
+            internal get
+            {
+                return _userPassword;
+            }
+
             set
             {
                 if (_document._securitySettings.DocumentSecurityLevel == PdfDocumentSecurityLevel.None)
@@ -86,12 +96,12 @@ namespace PdfSharp.Pdf.Security
                 _ownerPassword = value;
             }
         }
-        internal string _ownerPassword;
+        private string _ownerPassword;
 
         /// <summary>
         /// Gets or sets the user access permission represented as an integer in the P key.
         /// </summary>
-        internal PdfUserAccessPermission Permission
+        internal override PdfUserAccessPermission Permission
         {
             get
             {
@@ -106,7 +116,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// Encrypts the whole document.
         /// </summary>
-        public void EncryptDocument()
+        public override void EncryptDocument()
         {
             foreach (PdfReference iref in _document._irefTable.AllReferences)
             {
@@ -215,7 +225,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// Encrypts an array.
         /// </summary>
-        internal byte[] EncryptBytes(byte[] bytes)
+        internal override byte[] EncryptBytes(byte[] bytes)
         {
             if (bytes != null && bytes.Length != 0)
             {
@@ -228,15 +238,41 @@ namespace PdfSharp.Pdf.Security
         #region Encryption Algorithms
 
         /// <summary>
+        /// Tests the encryption dictionary to see if this handler supports the
+        /// algorithm specified in its data
+        /// </summary>
+        /// <param name="dict">The encryption dictionary</param>
+        /// <returns>True if this class can handle this algorithm, false otherwise</returns>
+        public static bool CanHandle(PdfDictionary dict)
+        {
+            string filter = dict.Elements.GetName(PdfSecurityHandler.Keys.Filter);
+            int v = dict.Elements.GetInteger(PdfSecurityHandler.Keys.V);
+            if (filter != Standard || !(v >= 1 && v <= 4))
+                return false;
+
+            if (filter == Standard && v == 4)
+            {
+                PdfDictionary cf = dict.Elements.GetDictionary(PdfSecurityHandler.Keys.CF);
+                if (!cf.Elements.ContainsKey(PdfCryptoFilter.StdCF))
+                    return false;
+
+                PdfDictionary stdCF = cf.Elements.GetDictionary(PdfCryptoFilter.StdCF);
+                string cfm = stdCF.Elements.GetName(PdfCryptoFilter.Keys.CFM);
+                if (cfm != PdfCryptoFilter.V2)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Checks the password.
         /// </summary>
         /// <param name="inputPassword">Password or null if no password is provided.</param>
-        public PasswordValidity ValidatePassword(string inputPassword)
+        public override PasswordValidity ValidatePassword(string inputPassword)
         {
             // We can handle 40 and 128 bit standard encryption.
-            string filter = Elements.GetName(PdfSecurityHandler.Keys.Filter);
-            int v = Elements.GetInteger(PdfSecurityHandler.Keys.V);
-            if (filter != "/Standard" || !(v >= 1 && v <= 3))
+            if (!CanHandle(this))
                 throw new PdfReaderException(PSSR.UnknownEncryption);
 
             byte[] documentID = PdfEncoders.RawEncoding.GetBytes(Owner.Internals.FirstDocumentID);
@@ -298,7 +334,7 @@ namespace PdfSharp.Pdf.Security
         static readonly byte[] PasswordPadding = // 32 bytes password padding defined by Adobe
             {
               0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41, 0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08,
-              0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80, 0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A,
+              0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80, 0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A
             };
 
         /// <summary>
@@ -525,7 +561,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// Set the hash key for the specified object.
         /// </summary>
-        internal void SetHashKey(PdfObjectID id)
+        internal override void SetHashKey(PdfObjectID id)
         {
 #if !NETFX_CORE
             //#if !SILVERLIGHT
@@ -551,7 +587,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// Prepares the security handler for encrypting the document.
         /// </summary>
-        public void PrepareEncryption()
+        public override void PrepareEncryption()
         {
             //#if !SILVERLIGHT
             Debug.Assert(_document._securitySettings.DocumentSecurityLevel != PdfDocumentSecurityLevel.None);
@@ -599,9 +635,9 @@ namespace PdfSharp.Pdf.Security
             PdfString oValue = new PdfString(PdfEncoders.RawEncoding.GetString(_ownerKey, 0, _ownerKey.Length));
             PdfString uValue = new PdfString(PdfEncoders.RawEncoding.GetString(_userKey, 0, _userKey.Length));
 
-            Elements[Keys.Filter] = new PdfName("/Standard");
-            Elements[Keys.V] = vValue;
-            Elements[Keys.Length] = length;
+            Elements[PdfSecurityHandler.Keys.Filter] = new PdfName("/Standard");
+            Elements[PdfSecurityHandler.Keys.V] = vValue;
+            Elements[PdfSecurityHandler.Keys.Length] = length;
             Elements[Keys.R] = rValue;
             Elements[Keys.O] = oValue;
             Elements[Keys.U] = uValue;
@@ -658,7 +694,7 @@ namespace PdfSharp.Pdf.Security
         internal override void WriteObject(PdfWriter writer)
         {
             // Don't encrypt myself.
-            PdfStandardSecurityHandler securityHandler = writer.SecurityHandler;
+            PdfSecurityHandler securityHandler = writer.SecurityHandler;
             writer.SecurityHandler = null;
             base.WriteObject(writer);
             writer.SecurityHandler = securityHandler;

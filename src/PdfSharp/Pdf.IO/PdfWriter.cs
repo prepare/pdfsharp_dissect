@@ -44,7 +44,7 @@ namespace PdfSharp.Pdf.IO
     /// </summary>
     internal class PdfWriter
     {
-        public PdfWriter(Stream pdfStream, PdfStandardSecurityHandler securityHandler)
+        public PdfWriter(Stream pdfStream, PdfSecurityHandler securityHandler)
         {
             _stream = pdfStream;
             _securityHandler = securityHandler;
@@ -633,12 +633,12 @@ namespace PdfSharp.Pdf.IO
         }
         Stream _stream;
 
-        internal PdfStandardSecurityHandler SecurityHandler
+        internal PdfSecurityHandler SecurityHandler
         {
             get { return _securityHandler; }
             set { _securityHandler = value; }
         }
-        PdfStandardSecurityHandler _securityHandler;
+        PdfSecurityHandler _securityHandler;
 
         class StackItem
         {

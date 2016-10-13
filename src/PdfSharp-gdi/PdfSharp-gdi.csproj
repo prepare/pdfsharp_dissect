@@ -879,6 +879,9 @@
     <Compile Include="..\PdfSharp\Pdf.Security\MD5Managed.cs">
       <Link>Pdf.Security\MD5Managed.cs</Link>
     </Compile>
+    <Compile Include="..\PdfSharp\Pdf.Security\PdfCryptoFilter.cs">
+      <Link>Pdf.Security\PdfCryptoFilter.cs</Link>
+    </Compile>
     <Compile Include="..\PdfSharp\Pdf.Security\PdfSecurityHandler.cs">
       <Link>Pdf.Security\PdfSecurityHandler.cs</Link>
     </Compile>

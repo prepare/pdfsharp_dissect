@@ -311,7 +311,7 @@ namespace PdfSharp.Pdf.IO
 
                     encrypt.Reference = xrefEncrypt;
                     xrefEncrypt.Value = encrypt;
-                    PdfStandardSecurityHandler securityHandler = document.SecurityHandler;
+                    PdfSecurityHandler securityHandler = document.SecurityHandler;
                     TryAgain:
                     PasswordValidity validity = securityHandler.ValidatePassword(password);
                     if (validity == PasswordValidity.Invalid)

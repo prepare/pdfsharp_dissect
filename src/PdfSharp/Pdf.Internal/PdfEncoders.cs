@@ -204,7 +204,7 @@ namespace PdfSharp.Pdf.Internal
         /// <summary>
         /// Converts a raw string into a raw string literal, possibly encrypted.
         /// </summary>
-        public static string ToStringLiteral(string text, PdfStringEncoding encoding, PdfStandardSecurityHandler securityHandler)
+        public static string ToStringLiteral(string text, PdfStringEncoding encoding, PdfSecurityHandler securityHandler)
         {
             if (String.IsNullOrEmpty(text))
                 return "()";
@@ -250,7 +250,7 @@ namespace PdfSharp.Pdf.Internal
         /// <summary>
         /// Converts a raw string into a raw hexadecimal string literal, possibly encrypted.
         /// </summary>
-        public static string ToHexStringLiteral(string text, PdfStringEncoding encoding, PdfStandardSecurityHandler securityHandler)
+        public static string ToHexStringLiteral(string text, PdfStringEncoding encoding, PdfSecurityHandler securityHandler)
         {
             if (String.IsNullOrEmpty(text))
                 return "<>";
@@ -304,7 +304,7 @@ namespace PdfSharp.Pdf.Internal
         /// <param name="hex">Indicates whether to create a hexadecimal string literal.</param>
         /// <param name="securityHandler">Encrypts the bytes if specified.</param>
         /// <returns>The PDF bytes.</returns>
-        public static byte[] FormatStringLiteral(byte[] bytes, bool unicode, bool prefix, bool hex, PdfStandardSecurityHandler securityHandler)
+        public static byte[] FormatStringLiteral(byte[] bytes, bool unicode, bool prefix, bool hex, PdfSecurityHandler securityHandler)
         {
             if (bytes == null || bytes.Length == 0)
                 return hex ? new byte[] { (byte)'<', (byte)'>' } : new byte[] { (byte)'(', (byte)')' };

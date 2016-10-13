@@ -60,6 +60,7 @@ namespace PdfSharp.Pdf
         ArrayOrNameOrString = 0x00000060,
         FunctionOrName = 0x000000070,
         Various = 0x000000080,
+        ArrayOrString = 0x00000090,
 
         TypeMask = 0x000000FF,
 

@@ -150,16 +150,22 @@ namespace PdfSharp.Pdf.Advanced
         /// <summary>
         /// Gets the standard security handler.
         /// </summary>
-        public PdfStandardSecurityHandler SecurityHandler
+        public PdfSecurityHandler SecurityHandler
         {
             get
             {
                 if (_securityHandler == null)
-                    _securityHandler = (PdfStandardSecurityHandler)Elements.GetValue(Keys.Encrypt, VCF.CreateIndirect);
+                {
+                    PdfDictionary encrypt = (PdfDictionary)Elements.GetValue(Keys.Encrypt, VCF.CreateIndirect);
+
+                    if (PdfStandardSecurityHandler.CanHandle(encrypt))
+                        _securityHandler = new PdfStandardSecurityHandler(encrypt);
+                }
+
                 return _securityHandler;
             }
         }
-        internal PdfStandardSecurityHandler _securityHandler;
+        internal PdfSecurityHandler _securityHandler;
 
         internal override void WriteObject(PdfWriter writer)
         {
@@ -168,7 +174,7 @@ namespace PdfSharp.Pdf.Advanced
             _elements.Remove(Keys.XRefStm);
 
             // Don't encrypt myself
-            PdfStandardSecurityHandler securityHandler = writer.SecurityHandler;
+            PdfSecurityHandler securityHandler = writer.SecurityHandler;
             writer.SecurityHandler = null;
             base.WriteObject(writer);
             writer.SecurityHandler = securityHandler;

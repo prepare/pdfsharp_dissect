@@ -227,7 +227,7 @@ namespace PdfSharp.Pdf
             if (_outStream != null)
             {
                 // Get security handler if document gets encrypted
-                PdfStandardSecurityHandler securityHandler = null;
+                PdfSecurityHandler securityHandler = null;
                 if (SecuritySettings.DocumentSecurityLevel != PdfDocumentSecurityLevel.None)
                     securityHandler = SecuritySettings.SecurityHandler;
 
@@ -314,7 +314,7 @@ namespace PdfSharp.Pdf
                 throw new PdfSharpException(message);
 
             // Get security handler if document gets encrypted.
-            PdfStandardSecurityHandler securityHandler = null;
+            PdfSecurityHandler securityHandler = null;
             if (SecuritySettings.DocumentSecurityLevel != PdfDocumentSecurityLevel.None)
                 securityHandler = SecuritySettings.SecurityHandler;
 
@@ -376,7 +376,7 @@ namespace PdfSharp.Pdf
                 bool encrypt = _securitySettings.DocumentSecurityLevel != PdfDocumentSecurityLevel.None;
                 if (encrypt)
                 {
-                    PdfStandardSecurityHandler securityHandler = _securitySettings.SecurityHandler;
+                    PdfSecurityHandler securityHandler = _securitySettings.SecurityHandler;
                     if (securityHandler.Reference == null)
                         _irefTable.Add(securityHandler);
                     else
@@ -848,7 +848,7 @@ namespace PdfSharp.Pdf
         /// <summary>
         /// Gets the security handler.
         /// </summary>
-        public PdfStandardSecurityHandler SecurityHandler
+        public PdfSecurityHandler SecurityHandler
         {
             get { return _trailer.SecurityHandler; }
         }

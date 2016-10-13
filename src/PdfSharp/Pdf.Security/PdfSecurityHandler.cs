@@ -29,6 +29,8 @@
 
 // ReSharper disable InconsistentNaming
 
+using PdfSharp.Pdf.IO;
+
 namespace PdfSharp.Pdf.Security
 {
     /// <summary>
@@ -36,6 +38,8 @@ namespace PdfSharp.Pdf.Security
     /// </summary>
     public abstract class PdfSecurityHandler : PdfDictionary
     {
+        public const string Standard = "/Standard";
+
         internal PdfSecurityHandler(PdfDocument document)
             : base(document)
         { }
@@ -43,6 +47,22 @@ namespace PdfSharp.Pdf.Security
         internal PdfSecurityHandler(PdfDictionary dict)
             : base(dict)
         { }
+
+        public abstract string UserPassword { internal get; set; }
+
+        public abstract string OwnerPassword  { internal get; set; }
+
+        internal abstract PdfUserAccessPermission Permission { get; set; }
+
+        public abstract void PrepareEncryption();
+
+        internal abstract void SetHashKey(PdfObjectID id);
+
+        public abstract PasswordValidity ValidatePassword(string inputPassword);
+
+        public abstract void EncryptDocument();
+
+        internal abstract byte[] EncryptBytes(byte[] bytes);
 
         /// <summary>
         /// Predefined keys of this dictionary.
@@ -112,7 +132,7 @@ namespace PdfSharp.Pdf.Security
             public const string StmF = "/StmF";
 
             /// <summary>
-            /// (Optional; meaningful only when the value of V is 4; PDF 1.)
+            /// (Optional; meaningful only when the value of V is 4; PDF 1.5)
             /// The name of the crypt filter that is used when decrypting all strings in the document.
             /// The name must be a key in the CF dictionary or a standard crypt filter name.
             /// Default value: Identity.

@@ -91,7 +91,7 @@ namespace PdfSharp.Pdf.Security
         {
             if (_documentSecurityLevel != PdfDocumentSecurityLevel.None)
             {
-                if (String.IsNullOrEmpty(SecurityHandler._userPassword) && String.IsNullOrEmpty(SecurityHandler._ownerPassword))
+                if (String.IsNullOrEmpty(SecurityHandler.UserPassword) && String.IsNullOrEmpty(SecurityHandler.OwnerPassword))
                 {
                     message = PSSR.UserOrOwnerPasswordRequired;
                     return false;
@@ -245,7 +245,7 @@ namespace PdfSharp.Pdf.Security
         /// <summary>
         /// PdfStandardSecurityHandler is the only implemented handler.
         /// </summary>
-        internal PdfStandardSecurityHandler SecurityHandler
+        internal PdfSecurityHandler SecurityHandler
         {
             get { return _document._trailer.SecurityHandler; }
         }
