@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -55,7 +55,7 @@ namespace PdfSharp.Pdf.Advanced
 
         public struct CrossReferenceStreamEntry
         {
-            // Reference: TABLE 3.16  Entries in a cross-refernece stream / Page 109
+            // Reference: TABLE 3.16  Entries in a cross-reference stream / Page 109
 
             public uint Type;  // 0, 1, or 2.
 
@@ -67,7 +67,7 @@ namespace PdfSharp.Pdf.Advanced
         /// <summary>
         /// Predefined keys for cross-reference dictionaries.
         /// </summary>
-        public new class Keys : PdfTrailer.Keys  // Reference: TABLE 3.15  Additional entries specific to a cross-refernece stream dictionary / Page 107
+        public new class Keys : PdfTrailer.Keys  // Reference: TABLE 3.15  Additional entries specific to a cross-reference stream dictionary / Page 107
         {
             /// <summary>
             /// (Required) The type of PDF object that this dictionary describes;

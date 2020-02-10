@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -198,7 +198,8 @@ namespace PdfSharp.Drawing
         {
             if (_stringFormat == null)
             {
-                _stringFormat = StringFormat.GenericTypographic;
+                // It seems that StringFormat.GenericTypographic is a global object and we need "Clone()" to avoid side effects.
+                _stringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
                 _stringFormat.Alignment = (StringAlignment)_alignment;
 
                 // BaseLine is specific to PDFsharp.

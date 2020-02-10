@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -52,7 +52,7 @@ namespace PdfSharp.Fonts
     //     Typeface (Font family) -> Schriftart / Schriftfamilie
     //     Glyph -> Glyphe 
     // 
-    // It seems that typeface and font family are synonyms in english.
+    // It seems that typeface and font family are synonyms in English.
     // In WPF a family name is used as a term for a bunch of fonts that share the same
     // characteristics, like Univers or Times New Roman.
     // In WPF a fontface describes a request of a font of a particular font family, e.g.

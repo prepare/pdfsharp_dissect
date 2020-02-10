@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -30,7 +30,7 @@
 namespace PdfSharp.Pdf.AcroForms
 {
     /// <summary>
-    /// Represents a interactive form (or AcroForm), a collection of fields for 
+    /// Represents an interactive form (or AcroForm), a collection of fields for
     /// gathering information interactively from the user.
     /// </summary>
     public sealed class PdfAcroForm : PdfDictionary

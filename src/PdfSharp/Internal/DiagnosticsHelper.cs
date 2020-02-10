@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -116,8 +116,10 @@ namespace PdfSharp.Internal
         /// </summary>
         public static void Break(bool always)
         {
+#if DEBUG
             if (always || Debugger.IsAttached)
                 Debugger.Break();
+#endif
         }
     }
 

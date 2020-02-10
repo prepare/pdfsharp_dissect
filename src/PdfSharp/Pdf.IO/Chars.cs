@@ -1,9 +1,9 @@
-#region PDFsharp - A .NET library for processing PDF
+ï»¿#region PDFsharp - A .NET library for processing PDF
 //
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -178,11 +178,11 @@ namespace PdfSharp.Pdf.IO
         /// <summary>
         /// The soft hyphen.
         /// </summary>
-        public const char SoftHyphen = '­';  // char(173)
+        public const char SoftHyphen = 'Â­';  // char(173)
         /// <summary>
         /// The currency sign.
         /// </summary>
-        public const char Currency = '¤';
+        public const char Currency = 'Â¤';
 
         // ReSharper restore InconsistentNaming
     }

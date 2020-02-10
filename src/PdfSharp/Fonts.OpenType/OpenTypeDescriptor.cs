@@ -1,9 +1,9 @@
-#region PDFsharp - A .NET library for processing PDF
+﻿#region PDFsharp - A .NET library for processing PDF
 //
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -122,19 +122,20 @@ namespace PdfSharp.Fonts.OpenType
 
             UnderlinePosition = FontFace.post.underlinePosition;
             UnderlineThickness = FontFace.post.underlineThickness;
+
+            // PDFlib states that some Apple fonts miss the OS/2 table.
+            Debug.Assert(FontFace.os2 != null, "TrueType font has no OS/2 table.");
+
             StrikeoutPosition = FontFace.os2.yStrikeoutPosition;
             StrikeoutSize = FontFace.os2.yStrikeoutSize;
 
-            // No documetation found how to get the set vertical stems width from the
+            // No documentation found how to get the set vertical stems width from the
             // TrueType tables.
             // The following formula comes from PDFlib Lite source code. Acrobat 5.0 sets
             // /StemV to 0 always. I think the value doesn't matter.
             //float weight = (float)(image.os2.usWeightClass / 65.0f);
             //stemV = (int)(50 + weight * weight);  // MAGIC
             StemV = 0;
-
-            // PDFlib states that some Apple fonts miss the OS/2 table.
-            Debug.Assert(FontFace.os2 != null, "TrueType font has no OS/2 table.");
 
             UnitsPerEm = FontFace.head.unitsPerEm;
 
