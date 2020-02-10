@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -362,7 +362,7 @@ namespace PdfSharp.Pdf.Security
             _ownerKey = ownerKey;
             _encryptionKey = new byte[strongEncryption ? 16 : 5];
 
-#if !NETFX_CORE
+#if !NETFX_CORE && !DNC10
             _md5.Initialize();
             _md5.TransformBlock(userPad, 0, userPad.Length, userPad, 0);
             _md5.TransformBlock(ownerKey, 0, ownerKey.Length, ownerKey, 0);
@@ -397,7 +397,7 @@ namespace PdfSharp.Pdf.Security
         /// </summary>
         void SetupUserKey(byte[] documentID)
         {
-#if !NETFX_CORE
+#if !NETFX_CORE && !DNC10
             //#if !SILVERLIGHT
             if (_encryptionKey.Length == 16)
             {
@@ -431,6 +431,7 @@ namespace PdfSharp.Pdf.Security
         /// </summary>
         void PrepareKey()
         {
+            if (_key != null && _keySize > 0) //!!!mod 2017-11-06 Added "if" because PrepareRC4Key fails if _key is null. But _key appears to be always null, so maybe PrepareKey() is obsolete.
             PrepareRC4Key(_key, 0, _keySize);
         }
 
@@ -527,7 +528,7 @@ namespace PdfSharp.Pdf.Security
         /// </summary>
         internal void SetHashKey(PdfObjectID id)
         {
-#if !NETFX_CORE
+#if !NETFX_CORE && !DNC10
             //#if !SILVERLIGHT
             byte[] objectId = new byte[5];
             _md5.Initialize();

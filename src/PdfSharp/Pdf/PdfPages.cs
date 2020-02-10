@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Collections;
+using PdfSharp.Events;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.Annotations;
@@ -163,6 +164,10 @@ namespace PdfSharp.Pdf
                 // Update page count.
                 Elements.SetInteger(Keys.Count, PagesArray.Elements.Count);
 
+                // @PDF/UA: Pages must not be moved.
+                if (_document._uaManager != null)
+                    _document.Events.OnPageAdded(_document, new PageEventArgs { Page = page, PageIndex = index, EventType = PageEventType.Moved });
+
                 return page;
             }
 
@@ -176,6 +181,10 @@ namespace PdfSharp.Pdf
                 Debug.Assert(page.Owner == Owner);
                 PagesArray.Elements.Insert(index, page.Reference);
                 Elements.SetInteger(Keys.Count, PagesArray.Elements.Count);
+
+                // @PDF/UA: Page was created.
+                if (_document._uaManager != null)
+                    _document.Events.OnPageAdded(_document, new PageEventArgs { Page = page, PageIndex = index, EventType = PageEventType.Created });
             }
             else
             {
@@ -191,9 +200,14 @@ namespace PdfSharp.Pdf
                 PagesArray.Elements.Insert(index, page.Reference);
                 Elements.SetInteger(Keys.Count, PagesArray.Elements.Count);
                 PdfAnnotations.FixImportedAnnotation(page);
+
+                // @PDF/UA: Page was imported.
+                if (_document._uaManager != null)
+                    _document.Events.OnPageAdded(_document, new PageEventArgs { Page = page, PageIndex = index, EventType = PageEventType.Imported });
             }
             if (Owner.Settings.TrimMargins.AreSet)
                 page.TrimMargins = Owner.Settings.TrimMargins;
+            
             return page;
         }
 
@@ -206,6 +220,7 @@ namespace PdfSharp.Pdf
         /// <param name="pageCount">The number of pages to be inserted.</param>
         public void InsertRange(int index, PdfDocument document, int startIndex, int pageCount)
         {
+            // @PDF/UA
             if (document == null)
                 throw new ArgumentNullException("document");
 
@@ -350,6 +365,10 @@ namespace PdfSharp.Pdf
                 }
 
             }
+
+            // @PDF/UA: Pages were imported.
+            if (_document._uaManager != null)
+                _document.Events.OnPageAdded(_document, new PageEventArgs { EventType = PageEventType.Imported });
         }
 
         /// <summary>
@@ -386,6 +405,10 @@ namespace PdfSharp.Pdf
         {
             PagesArray.Elements.Remove(page.Reference);
             Elements.SetInteger(Keys.Count, PagesArray.Elements.Count);
+
+            // @PDF/UA: Page was removed.
+            if (_document._uaManager != null)
+                _document.Events.OnPageRemoved(_document, new PageEventArgs { Page = page, PageIndex = -1, EventType = PageEventType.Removed });
         }
 
         /// <summary>
@@ -393,8 +416,13 @@ namespace PdfSharp.Pdf
         /// </summary>
         public void RemoveAt(int index)
         {
+            PdfPage page = PagesArray.Elements[index] as PdfPage;
             PagesArray.Elements.RemoveAt(index);
             Elements.SetInteger(Keys.Count, PagesArray.Elements.Count);
+
+            // @PDF/UA
+            if (_document._uaManager != null)
+                _document.Events.OnPageRemoved(_document, new PageEventArgs { Page = page, PageIndex = index });
         }
 
         /// <summary>
@@ -404,6 +432,10 @@ namespace PdfSharp.Pdf
         /// <param name="newIndex">The page index after this operation.</param>
         public void MovePage(int oldIndex, int newIndex)
         {
+            // @PDF/UA Not implemented.
+            if (_document._uaManager != null)
+                throw new InvalidOperationException("Cannot move a page in a PDF/UA document.");
+
             if (oldIndex < 0 || oldIndex >= Count)
                 throw new ArgumentOutOfRangeException("oldIndex");
             if (newIndex < 0 || newIndex >= Count)
@@ -441,7 +473,7 @@ namespace PdfSharp.Pdf
             CloneElement(page, importPage, PdfPage.Keys.ArtBox, true);
 #if true
             // Do not deep copy annotations.
-            //CloneElement(page, importPage, PdfPage.Keys.Annots, false);
+            CloneElement(page, importPage, PdfPage.Keys.Annots, false);
 #else
             // Deep copy annotations.
             CloneElement(page, importPage, PdfPage.Keys.Annots, true);
@@ -530,7 +562,7 @@ namespace PdfSharp.Pdf
         /// </summary>
         internal void FlattenPageTree()
         {
-            // Acrobat creates a balanced tree if the number of pages is rougly more than ten. This is
+            // Acrobat creates a balanced tree if the number of pages is roughly more than ten. This is
             // not difficult but obviously also not necessary. I created a document with 50000 pages with
             // PDF4NET and Acrobat opened it in less than 2 seconds.
 
@@ -555,10 +587,10 @@ namespace PdfSharp.Pdf
 
             Elements.SetName(Keys.Type, "/Pages");
 #if true
-            // direct array
+            // Direct array.
             Elements.SetValue(Keys.Kids, array);
 #else
-            // incdirect array
+            // Indirect array.
             Document.xrefTable.Add(array);
             Elements.SetValue(Keys.Kids, array.XRef);
 #endif
@@ -605,7 +637,8 @@ namespace PdfSharp.Pdf
             if (kids == null)
             {
                 PdfReference xref3 = kid.Elements["/Kids"] as PdfReference;
-                kids = xref3.Value as PdfArray;
+                if (xref3 != null)
+                    kids = xref3.Value as PdfArray;
             }
 
             foreach (PdfReference xref2 in kids)

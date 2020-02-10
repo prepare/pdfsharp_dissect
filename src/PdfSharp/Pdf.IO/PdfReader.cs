@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using PdfSharp.Internal;
 using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.Security;
 using PdfSharp.Pdf.Internal;
@@ -262,7 +263,7 @@ namespace PdfSharp.Pdf.IO
         /// </summary>
         public static PdfDocument Open(Stream stream, PdfDocumentOpenMode openmode, PdfPasswordProvider passwordProvider)
         {
-            return Open(stream, null, openmode);
+            return Open(stream, null, openmode, passwordProvider);
         }
         /// <summary>
         /// Opens an existing PDF document.
@@ -298,6 +299,8 @@ namespace PdfSharp.Pdf.IO
                 Parser parser = new Parser(document);
                 // Read all trailers or cross-reference streams, but no objects.
                 document._trailer = parser.ReadTrailer();
+                if (document._trailer == null)
+                    ParserDiagnostics.ThrowParserException("Invalid PDF file: no trailer found."); // TODO L10N using PSSR.
 
                 Debug.Assert(document._irefTable.IsUnderConstruction);
                 document._irefTable.IsUnderConstruction = false;

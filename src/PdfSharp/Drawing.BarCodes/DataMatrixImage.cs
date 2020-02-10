@@ -1,9 +1,9 @@
-#region PDFsharp - A .NET library for processing PDF
+ï»¿#region PDFsharp - A .NET library for processing PDF
 //
 // Authors:
 //   David Stephensen
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -68,7 +68,7 @@ namespace PdfSharp.Drawing.BarCodes
         readonly int _columns;
 
         /// <summary>
-        /// Possible ECC200 Matrixes
+        /// Possible ECC200 Matrices.
         /// </summary>
         static Ecc200Block[] ecc200Sizes =
     {
@@ -237,12 +237,12 @@ namespace PdfSharp.Drawing.BarCodes
                             if (newenc == 'c')
                             {
                                 e = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                                s3 = "`abcdefghijklmnopqrstuvwxyz{|}~±";
+                                s3 = "`abcdefghijklmnopqrstuvwxyz{|}~Â±";
                             }
                             if (newenc == 't')
                             {
                                 e = " 0123456789abcdefghijklmnopqrstuvwxyz";
-                                s3 = "`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~±";
+                                s3 = "`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~Â±";
                             }
                             if (newenc == 'x')
                                 e = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\r*>";
@@ -757,7 +757,7 @@ namespace PdfSharp.Drawing.BarCodes
             // WPFHACK
             return null;
 #endif
-#if CORE || NETFX_CORE || UWP
+#if CORE || NETFX_CORE || UWP || DNC10
             return null;
 #endif
         }

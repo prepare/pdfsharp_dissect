@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -71,7 +71,7 @@ namespace PdfSharp.Pdf
     [DebuggerDisplay("{DebuggerDisplay}")]
     public class PdfDictionary : PdfObject, IEnumerable<KeyValuePair<string, PdfItem>>
     {
-        // Reference: 3.2.6  Dictionary Objects / Page 59
+        // Reference: 3.2.6  Dictionary Objects / Page 59
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PdfDictionary"/> class.
@@ -199,7 +199,7 @@ namespace PdfSharp.Pdf
 #endif
 
 #if DEBUG
-            // Sort keys for debugging purposes. Comparing PDF files with for example programms like
+            // Sort keys for debugging purposes. Comparing PDF files with for example programs like
             // Araxis Merge is easier with sorted keys.
             if (writer.Layout == PdfWriterLayout.Verbose)
             {
@@ -818,7 +818,9 @@ namespace PdfSharp.Pdf
                 PdfArray array;
                 PdfReference iref;
                 PdfItem value = this[key];
-                if (value == null)
+                if (value == null ||
+                    value is PdfNull ||
+                    value is PdfReference && ((PdfReference)value).Value is PdfNullObject)
                 {
                     if (options != VCF.None)
                     {
@@ -992,7 +994,7 @@ namespace PdfSharp.Pdf
                 PdfArray array;
                 if (oldArray == null)
                 {
-                    // Use contstructor with signature 'Ctor(PdfDocument owner)'.
+                    // Use constructor with signature 'Ctor(PdfDocument owner)'.
                     ctorInfo = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                         null, new Type[] { typeof(PdfDocument) }, null);
                     Debug.Assert(ctorInfo != null, "No appropriate constructor found for type: " + type.Name);
@@ -1000,7 +1002,7 @@ namespace PdfSharp.Pdf
                 }
                 else
                 {
-                    // Use contstructor with signature 'Ctor(PdfDictionary dict)'.
+                    // Use constructor with signature 'Ctor(PdfDictionary dict)'.
                     ctorInfo = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                         null, new Type[] { typeof(PdfArray) }, null);
                     Debug.Assert(ctorInfo != null, "No appropriate constructor found for type: " + type.Name);
@@ -1012,7 +1014,7 @@ namespace PdfSharp.Pdf
                 PdfArray array = null;
                 if (oldArray == null)
                 {
-                    // Use contstructor with signature 'Ctor(PdfDocument owner)'.
+                    // Use constructor with signature 'Ctor(PdfDocument owner)'.
                     var ctorInfos = type.GetTypeInfo().DeclaredConstructors; //.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                     //null, new Type[] { typeof(PdfDocument) }, null);
                     foreach (var ctorInfo in ctorInfos)
@@ -1028,7 +1030,7 @@ namespace PdfSharp.Pdf
                 }
                 else
                 {
-                    // Use contstructor with signature 'Ctor(PdfDictionary dict)'.
+                    // Use constructor with signature 'Ctor(PdfDictionary dict)'.
                     var ctorInfos = type.GetTypeInfo().DeclaredConstructors; // .GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                     //null, new Type[] { typeof(PdfArray) }, null);
                     foreach (var ctorInfo in ctorInfos)
@@ -1053,7 +1055,7 @@ namespace PdfSharp.Pdf
                 PdfDictionary dict;
                 if (oldDictionary == null)
                 {
-                    // Use contstructor with signature 'Ctor(PdfDocument owner)'.
+                    // Use constructor with signature 'Ctor(PdfDocument owner)'.
                     ctorInfo = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                         null, new Type[] { typeof(PdfDocument) }, null);
                     Debug.Assert(ctorInfo != null, "No appropriate constructor found for type: " + type.Name);
@@ -1061,7 +1063,7 @@ namespace PdfSharp.Pdf
                 }
                 else
                 {
-                    // Use contstructor with signature 'Ctor(PdfDictionary dict)'.
+                    // Use constructor with signature 'Ctor(PdfDictionary dict)'.
                     ctorInfo = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                       null, new Type[] { typeof(PdfDictionary) }, null);
                     Debug.Assert(ctorInfo != null, "No appropriate constructor found for type: " + type.Name);
@@ -1073,7 +1075,7 @@ namespace PdfSharp.Pdf
                 PdfDictionary dict = null;
                 if (oldDictionary == null)
                 {
-                    // Use contstructor with signature 'Ctor(PdfDocument owner)'.
+                    // Use constructor with signature 'Ctor(PdfDocument owner)'.
                     var ctorInfos = type.GetTypeInfo().DeclaredConstructors; //GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                     //null, new Type[] { typeof(PdfDocument) }, null);
                     foreach (var ctorInfo in ctorInfos)
@@ -1294,7 +1296,7 @@ namespace PdfSharp.Pdf
                     //{
                     //  PdfObject obj = (PdfObject)value;
                     //  if (obj.Reference != null)
-                    //    throw new ArgumentException("An object with an indirect reference cannot be a direct value. Try to set an indirect refernece.");
+                    //    throw new ArgumentException("An object with an indirect reference cannot be a direct value. Try to set an indirect reference.");
                     //}
                     if (value is PdfDictionary)
                     {

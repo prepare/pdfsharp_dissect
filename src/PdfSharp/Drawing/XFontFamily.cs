@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -107,10 +107,10 @@ namespace PdfSharp.Drawing
         }
 
         /// <summary>
-        /// An XGlyphTypeface for a font souce that comes from a custom font resolver
+        /// An XGlyphTypeface for a font source that comes from a custom font resolver
         /// creates a solitary font family exclusively for it.
         /// </summary>
-        internal static XFontFamily CreateSolitary(string name)
+        internal static XFontFamily GetOrCreateFontFamily(string name)
         {
             // Custom font resolver face names must not clash with platform family names.
             FontFamilyInternal fontFamilyInternal = FontFamilyCache.GetFamilyByName(name);
@@ -122,18 +122,6 @@ namespace PdfSharp.Drawing
 
             // Create font family and save it in cache. Do not try to create platform objects.
             return new XFontFamily(fontFamilyInternal);
-
-            //// Custom font resolver face names must not clash with platform family names.
-            //if (FontFamilyCache.GetFamilyByName(name) != null)
-            //{
-            //    // User must rename its font face to resolve naming confilict.
-            //    throw new InvalidOperationException(String.Format("Font face name {0} clashs with existing family name.", name));
-            //}
-
-            //// Create font family and save it in cache. Do not try to create platform objects.
-            //FontFamilyInternal fontFamilyInternal = FontFamilyInternal.GetOrCreateFromName(name, false);
-            //fontFamilyInternal = FontFamilyCache.CacheFontFamily(fontFamilyInternal);
-            //return new XFontFamily(fontFamilyInternal);
         }
 
 #if CORE || GDI
@@ -274,7 +262,7 @@ namespace PdfSharp.Drawing
 #endif
             return FontHelper.IsStyleAvailable(this, xStyle);
 #endif
-#if NETFX_CORE || UWP
+#if NETFX_CORE || UWP || DNC10
             throw new InvalidOperationException("In NETFX_CORE build it is the responsibility of the developer to provide all required font faces.");
 #endif
         }

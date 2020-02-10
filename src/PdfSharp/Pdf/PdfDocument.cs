@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -30,6 +30,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using PdfSharp.Events;
 #if NETFX_CORE
 using System.Threading.Tasks;
 #endif
@@ -187,6 +188,15 @@ namespace PdfSharp.Pdf
         object _tag;
 
         /// <summary>
+        /// Encapsulates the document's events.
+        /// </summary>
+        public DocumentEvents Events
+        {
+            get { return _events ?? (_events = new DocumentEvents()); }
+        }
+        DocumentEvents _events;
+
+        /// <summary>
         /// Gets or sets a value used to distinguish PdfDocument objects.
         /// The name is not used by PDFsharp.
         /// </summary>
@@ -335,7 +345,10 @@ namespace PdfSharp.Pdf
                         stream.Close();
 #endif
                     else
-                        stream.Position = 0; // Reset the stream position if the stream is kept open.
+                    {
+                        if (stream.CanRead && stream.CanSeek)
+                            stream.Position = 0; // Reset the stream position if the stream is kept open.
+                    }
                 }
                 if (writer != null)
                     writer.Close(closeStream);
@@ -371,7 +384,12 @@ namespace PdfSharp.Pdf
             {
                 // HACK: Remove XRefTrailer
                 if (_trailer is PdfCrossReferenceStream)
+                {
+                    // HACK^2: Preserve the SecurityHandler.
+                    PdfStandardSecurityHandler securityHandler = _securitySettings.SecurityHandler;
                     _trailer = new PdfTrailer((PdfCrossReferenceStream)_trailer);
+                    _trailer._securityHandler = securityHandler;
+                }
 
                 bool encrypt = _securitySettings.DocumentSecurityLevel != PdfDocumentSecurityLevel.None;
                 if (encrypt)
@@ -470,6 +488,10 @@ namespace PdfSharp.Pdf
                 Debug.WriteLine("PrepareForSave: Number of deleted unreachable objects: " + removed);
             _irefTable.Renumber();
 #endif
+            
+            // @PDF/UA
+            // Create PdfMetadata now to include the final document information in XMP generation.
+            Catalog.Elements.SetReference(PdfCatalog.Keys.Metadata, new PdfMetadata(this));
         }
 
         /// <summary>
@@ -725,8 +747,6 @@ namespace PdfSharp.Pdf
         {
             get { return Catalog.Language; }
             set { Catalog.Language = value; }
-            //get { return Catalog.Elements.GetString(PdfCatalog.Keys.Lang); }
-            //set { Catalog.Elements.SetString(PdfCatalog.Keys.Lang, value); }
         }
 
         /// <summary>
@@ -845,6 +865,49 @@ namespace PdfSharp.Pdf
             return Catalog.Pages.Insert(index, page);
         }
 
+        /// <summary>  
+        /// Adds a named destination to the document.
+        /// </summary>
+        /// <param name="destinationName">The Named Destination's name.</param>
+        /// <param name="destinationPage">The page to navigate to.</param>
+        /// <param name="parameters">The PdfNamedDestinationParameters defining the named destination's parameters.</param>
+        public void AddNamedDestination(string destinationName, int destinationPage, PdfNamedDestinationParameters parameters)
+        {
+            Internals.Catalog.Names.AddNamedDestination(destinationName, destinationPage, parameters);
+        }
+
+        /// <summary>  
+        /// Adds an embedded file to the document.
+        /// </summary>
+        /// <param name="name">The name used to refer and to entitle the embedded file.</param>
+        /// <param name="path">The path of the file to embed.</param>
+        public void AddEmbeddedFile(string name, string path)
+        {
+            var stream = new FileStream(path, FileMode.Open);
+            AddEmbeddedFile(name, stream);
+        }
+
+        /// <summary>
+        /// Adds an embedded file to the document.
+        /// </summary>
+        /// <param name="name">The name used to refer and to entitle the embedded file.</param>
+        /// <param name="stream">The stream containing the file to embed.</param>
+        public void AddEmbeddedFile(string name, Stream stream)
+        {
+            Internals.Catalog.Names.AddEmbeddedFile(name, stream);
+        }
+
+        /// <summary>  
+        /// Flattens a document (make the fields non-editable).  
+        /// </summary>  
+        public void Flatten()
+        {
+            for (int idx = 0; idx < AcroForm.Fields.Count; idx++)
+            {
+                AcroForm.Fields[idx].ReadOnly = true;
+            }
+        }
+
         /// <summary>
         /// Gets the security handler.
         /// </summary>
@@ -937,5 +1000,8 @@ namespace PdfSharp.Pdf
                 return !(left == right);
             }
         }
+
+#pragma warning disable CS0649
+        internal object _uaManager;
     }
 }

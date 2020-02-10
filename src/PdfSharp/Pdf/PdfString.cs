@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -35,6 +35,8 @@ using PdfSharp.Pdf.Internal;
 
 namespace PdfSharp.Pdf
 {
+    // TODO: Make code more readeable with PDF 1.7 strings: text string, ASCII string, byte string etc.
+
     /// <summary>
     /// Determines the encoding of a PdfString or PdfStringObject.
     /// </summary>
@@ -123,9 +125,15 @@ namespace PdfSharp.Pdf
         /// <param name="value">The value.</param>
         public PdfString(string value)
         {
+#if true
+            if (!IsRawEncoding(value))
+                _flags = PdfStringFlags.Unicode;
+            _value = value;
+#else
             CheckRawEncoding(value);
             _value = value;
             //_flags = PdfStringFlags.RawEncoding;
+#endif
         }
 
         /// <summary>
@@ -294,6 +302,20 @@ namespace PdfSharp.Pdf
             {
                 Debug.Assert(s[idx] < 256, "RawString contains invalid character.");
             }
+        }
+
+        static bool IsRawEncoding(string s)
+        {
+            if (String.IsNullOrEmpty(s))
+                return true;
+
+            int length = s.Length;
+            for (int idx = 0; idx < length; idx++)
+            {
+                if (!(s[idx] < 256))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

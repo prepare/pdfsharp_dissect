@@ -3,7 +3,7 @@
 // Authors:
 //   Stefan Lange
 //
-// Copyright (c) 2005-2016 empira Software GmbH, Cologne Area (Germany)
+// Copyright (c) 2005-2019 empira Software GmbH, Cologne Area (Germany)
 //
 // http://www.pdfsharp.com
 // http://sourceforge.net/projects/pdfsharp
@@ -86,7 +86,7 @@ namespace PdfSharp.Pdf.IO
         // /// <param name="testReference">Indicates whether to test the next token if it is a reference.</param>
         public Symbol ScanNextToken()
         {
-        Again:
+            Again:
             _token = new StringBuilder();
 
             char ch = MoveToNonWhiteSpace();
@@ -194,9 +194,14 @@ namespace PdfSharp.Pdf.IO
             byte[] bytes = new byte[length];
             int read = _pdfSteam.Read(bytes, 0, length);
             Debug.Assert(read == length);
+            // With corrupted files, read could be different from length.
+            if (bytes.Length != read)
+            {
+                Array.Resize(ref bytes, read);
+            }
 
             // Synchronize idxChar etc.
-            Position = pos + length;
+            Position = pos + read;
             return bytes;
         }
 
@@ -459,25 +464,26 @@ namespace PdfSharp.Pdf.IO
                                     continue;
 
                                 default:
-                                    if (char.IsDigit(ch))  // First octal character.
+                                    // TODO IsOctalDigit(ch).
+                                    if (char.IsDigit(ch) && _nextChar != '8' && _nextChar != '9')  // First octal character.
                                     {
-                                        // Octal character code.
-                                        if (ch >= '8')
-                                            ParserDiagnostics.HandleUnexpectedCharacter(ch);
+                                        //// Octal character code.
+                                        //if (ch >= '8')
+                                        //    ParserDiagnostics.HandleUnexpectedCharacter(ch);
 
                                         int n = ch - '0';
-                                        if (char.IsDigit(_nextChar))  // Second octal character.
+                                        if (char.IsDigit(_nextChar) && _nextChar != '8' && _nextChar != '9')  // Second octal character.
                                         {
                                             ch = ScanNextChar(false);
-                                            if (ch >= '8')
-                                                ParserDiagnostics.HandleUnexpectedCharacter(ch);
+                                            //if (ch >= '8')
+                                            //    ParserDiagnostics.HandleUnexpectedCharacter(ch);
 
                                             n = n * 8 + ch - '0';
-                                            if (char.IsDigit(_nextChar))  // Third octal character.
+                                            if (char.IsDigit(_nextChar) && _nextChar != '8' && _nextChar != '9')  // Third octal character.
                                             {
                                                 ch = ScanNextChar(false);
-                                                if (ch >= '8')
-                                                    ParserDiagnostics.HandleUnexpectedCharacter(ch);
+                                                //if (ch >= '8')
+                                                //    ParserDiagnostics.HandleUnexpectedCharacter(ch);
 
                                                 n = n * 8 + ch - '0';
                                             }
@@ -486,9 +492,11 @@ namespace PdfSharp.Pdf.IO
                                     }
                                     else
                                     {
+                                        // PDF 32000: "If the character following the REVERSE SOLIDUS is not one of those shown in Table 3, the REVERSE SOLIDUS shall be ignored."
                                         //TODO
                                         // Debug.As sert(false, "Not implemented; unknown escape character.");
-                                        ParserDiagnostics.HandleUnexpectedCharacter(ch);
+                                        // ParserDiagnostics.HandleUnexpectedCharacter(ch);
+                                        //GetType();
                                     }
                                     break;
                             }
@@ -565,12 +573,24 @@ namespace PdfSharp.Pdf.IO
                 if (char.IsLetterOrDigit(_currChar))
                 {
                     hex[0] = char.ToUpper(_currChar);
-                    hex[1] = char.ToUpper(_nextChar);
+                    // Second char is optional in PDF spec.
+                    if (char.IsLetterOrDigit(_nextChar))
+                    {
+                        hex[1] = char.ToUpper(_nextChar);
+                        ScanNextChar(true);
+                    }
+                    else
+                    {
+                        // We could check for ">" here and throw if we find anything else. The throw comes after the next iteration anyway.
+                        hex[1] = '0';
+                    }
+                    ScanNextChar(true);
+
                     int ch = int.Parse(new string(hex), NumberStyles.AllowHexSpecifier);
                     _token.Append(Convert.ToChar(ch));
-                    ScanNextChar(true);
-                    ScanNextChar(true);
                 }
+                else
+                    ParserDiagnostics.HandleUnexpectedCharacter(_currChar);
             }
             string chars = _token.ToString();
             int count = chars.Length;
@@ -629,7 +649,7 @@ namespace PdfSharp.Pdf.IO
 
         bool PeekReference()
         {
-            // A Reference has the form "nnn mmm R". The implementation of the the parser used a
+            // A Reference has the form "nnn mmm R". The implementation of the parser used a
             // reduce/shift algorithm in the first place. But this case is the only one we need to
             // look ahead 3 tokens. 
             int positon = Position;
@@ -670,7 +690,7 @@ namespace PdfSharp.Pdf.IO
             Position = positon;
             return true;
 
-        False:
+            False:
             Position = positon;
             return false;
         }

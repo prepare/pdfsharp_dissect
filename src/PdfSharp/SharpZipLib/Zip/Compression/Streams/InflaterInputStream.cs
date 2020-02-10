@@ -666,7 +666,7 @@ namespace PdfSharp.SharpZipLib.Zip.Compression.Streams
             throw new NotSupportedException("InflaterInputStream WriteByte not supported");
         }
 
-#if !NETFX_CORE && !UWP
+#if !NETFX_CORE && !UWP && !DNC10
         /// <summary>
         /// Entry point to begin an asynchronous write.  Always throws a NotSupportedException.
         /// </summary>
@@ -683,7 +683,7 @@ namespace PdfSharp.SharpZipLib.Zip.Compression.Streams
         }
 #endif
 
-#if !NETFX_CORE && !UWP
+#if !NETFX_CORE && !UWP && !DNC10
         /// <summary>
         /// Closes the input stream.  When <see cref="IsStreamOwner"></see>
         /// is true the underlying stream is also closed.
@@ -751,11 +751,22 @@ namespace PdfSharp.SharpZipLib.Zip.Compression.Streams
 
                 if (inf.IsNeedingInput)
                 {
-                    Fill();
+                    try
+                    {
+                        Fill();
+                    }
+                    catch (SharpZipBaseException ex)
+                    {
+                        // Hack 16-05-25: Some PDF files lead to an "Unexpected EOF" exception. Is it safe to ignore this exception?
+                        if (ex.Message != "Unexpected EOF")
+                            throw;
+                        // WB! early EOF: apparently not a big deal for some PDF pages: break out of the loop.
+                        break;
+                    }
                 }
                 else if (bytesRead == 0)
                 {
-                    throw new ZipException("Dont know what to do");
+                    throw new ZipException("Don't know what to do");
                 }
             }
             return count - remainingBytes;
